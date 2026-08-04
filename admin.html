@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="tr"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naransula Admin Manager</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #08080a; color: #fff; padding: 40px 20px; margin: 0; }
+        .admin-panel { max-width: 600px; margin: 0 auto; background: #141418; padding: 28px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); }
+        h2, h3 { margin-top: 0; color: #fff; }
+        .form-group { margin-bottom: 14px; }
+        label { display: block; font-size: 12px; color: #aaa; margin-bottom: 6px; font-weight: 500; }
+        input, textarea { width: 100%; padding: 10px; background: #202026; border: 1px solid #333; color: #fff; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        input:focus, textarea:focus { outline: none; border-color: #3b82f6; }
+        textarea { resize: vertical; min-height: 60px; }
+        .btn-group { display: flex; gap: 10px; margin-top: 18px; }
+        .btn { padding: 10px 18px; cursor: pointer; border: none; border-radius: 4px; font-weight: 600; font-size: 13px; transition: opacity 0.2s; }
+        .btn:hover { opacity: 0.9; }
+        .btn-add { background: #3b82f6; color: #fff; flex: 1; }
+        .btn-save { background: #eab308; color: #000; flex: 1; display: none; }
+        .btn-cancel { background: #4b5563; color: #fff; display: none; }
+        .btn-export { background: #22c55e; color: #fff; width: 100%; margin-top: 20px; padding: 14px; font-size: 14px; }
+        .project-list { margin-top: 24px; display: flex; flex-direction: column; gap: 8px; }
+        .project-item { display: flex; justify-content: space-between; align-items: center; background: #1c1c22; padding: 12px 16px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.04); }
+        .project-item.editing { border-color: #eab308; background: #242218; }
+        .project-info { display: flex; flex-direction: column; gap: 2px; }
+        .project-title { font-weight: 600; font-size: 14px; }
+        .project-sub { font-size: 12px; color: #777; word-break: break-all; }
+        .action-btns { display: flex; gap: 6px; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 3px; cursor: pointer; border: none; font-weight: 500; }
+        .btn-edit { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+        .btn-delete { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+    </style>
+</head>
+<body>
+
+<div class="admin-panel">
+    <h2>Proje Yönetimi</h2>
+    <hr style="border-color: rgba(255,255,255,0.08); margin-bottom: 20px;">
+
+    <!-- Form Alanları -->
+    <div class="form-group"><label for="titleTr">Title (TR) *</label><input type="text" id="titleTr"></div>
+    <div class="form-group"><label for="titleEn">Title (EN)</label><input type="text" id="titleEn"></div>
+    <div class="form-group"><label for="descTr">Description (TR)</label><textarea id="descTr"></textarea></div>
+    <div class="form-group"><label for="descEn">Description (EN)</label><textarea id="descEn"></textarea></div>
+    <div class="form-group"><label for="typeTr">Type (TR)</label><input type="text" id="typeTr" value="Website"></div>
+    <div class="form-group"><label for="typeEn">Type (EN)</label><input type="text" id="typeEn" value="Website"></div>
+    <div class="form-group"><label for="image">Image URL (Opsiyonel)</label><input type="text" id="image"></div>
+    <div class="form-group"><label for="url">URL *</label><input type="text" id="url" placeholder="https://"></div>
+
+    <div class="btn-group">
+        <button type="button" class="btn btn-add" id="btnAdd" onclick="addProject()" style="display: block;">+ Proje Ekle</button>
+        <button type="button" class="btn btn-save" id="btnSave" onclick="saveEdit()" style="display: none;">💾 Değişiklikleri Kaydet</button>
+        <button type="button" class="btn btn-cancel" id="btnCancel" onclick="resetForm()" style="display: none;">Vazgeç</button>
+    </div>
+
+    <button type="button" class="btn btn-export" onclick="exportFiles()">🚀 index.html VE admin.html İndir</button>
+
+    <h3 style="margin-top: 32px; font-size: 16px;">Mevcut Projeler</h3>
+    <div class="project-list" id="projectsList">
+            <div class="project-item ">
+                <div class="project-info">
+                    <span class="project-title">Tayfun Taşdemir</span>
+                    <span class="project-sub">http://tayfuntasdemir.com/</span>
+                </div>
+                <div class="action-btns">
+                    <button type="button" class="btn-sm btn-edit" onclick="editProject(1)">Düzenle</button>
+                    <button type="button" class="btn-sm btn-delete" onclick="deleteProject(1)">Sil</button>
+                </div>
+            </div>
+        
+            <div class="project-item ">
+                <div class="project-info">
+                    <span class="project-title">Injun46</span>
+                    <span class="project-sub">https://injun46.com/</span>
+                </div>
+                <div class="action-btns">
+                    <button type="button" class="btn-sm btn-edit" onclick="editProject(2)">Düzenle</button>
+                    <button type="button" class="btn-sm btn-delete" onclick="deleteProject(2)">Sil</button>
+                </div>
+            </div>
+        </div>
+</div>
+
+<script>
+    const defaultProjects = [
+        {
+                "id": 1,
+                "title_tr": "Tayfun Taşdemir",
+                "title_en": "Tayfun Taşdemir",
+                "desc_tr": "Kişisel marka web sitesi.",
+                "desc_en": "Personal brand website.",
+                "type_tr": "Website",
+                "type_en": "Website",
+                "image": "https://naransula.com/images/tayfun-tasdemir.png",
+                "url": "http://tayfuntasdemir.com/"
+        },
+        {
+                "id": 2,
+                "title_tr": "Injun46",
+                "title_en": "Injun46",
+                "desc_tr": "E-ticaret ve portfolio platformu.",
+                "desc_en": "E-commerce and portfolio platform.",
+                "type_tr": "Website",
+                "type_en": "Website",
+                "image": "",
+                "url": "https://injun46.com/"
+        }
+];
+
+    let projects = defaultProjects;
+    let editingId = null;
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function validateInputs(titleTr, url) {
+        if (!titleTr.trim()) {
+            alert('Başlık (TR) alanı zorunludur!');
+            return false;
+        }
+        if (!url.trim()) {
+            alert('URL alanı zorunludur!');
+            return false;
+        }
+        try {
+            const parsedUrl = new URL(url.trim());
+            if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+                alert('URL "http://" veya "https://" ile başlamalıdır!');
+                return false;
+            }
+        } catch (_) {
+            alert('Lütfen geçerli bir URL giriniz! (Örn: https://example.com)');
+            return false;
+        }
+        return true;
+    }
+
+    function renderList() {
+        const list = document.getElementById('projectsList');
+        list.innerHTML = projects.map(p => `
+            <div class="project-item ${editingId === p.id ? 'editing' : ''}">
+                <div class="project-info">
+                    <span class="project-title">${escapeHtml(p.title_tr)}</span>
+                    <span class="project-sub">${escapeHtml(p.url)}</span>
+                </div>
+                <div class="action-btns">
+                    <button type="button" class="btn-sm btn-edit" onclick="editProject(${p.id})">Düzenle</button>
+                    <button type="button" class="btn-sm btn-delete" onclick="deleteProject(${p.id})">Sil</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function addProject() {
+        const titleTr = document.getElementById('titleTr').value;
+        const url = document.getElementById('url').value;
+        if (!validateInputs(titleTr, url)) return;
+
+        projects.unshift({
+            id: Date.now(),
+            title_tr: titleTr.trim(),
+            title_en: document.getElementById('titleEn').value.trim() || titleTr.trim(),
+            desc_tr: document.getElementById('descTr').value.trim(),
+            desc_en: document.getElementById('descEn').value.trim(),
+            type_tr: document.getElementById('typeTr').value.trim() || 'Website',
+            type_en: document.getElementById('typeEn').value.trim() || 'Website',
+            image: document.getElementById('image').value.trim(),
+            url: url.trim()
+        });
+
+        resetForm();
+    }
+
+    function editProject(id) {
+        const p = projects.find(item => item.id === id);
+        if(!p) return;
+
+        editingId = id;
+        document.getElementById('titleTr').value = p.title_tr;
+        document.getElementById('titleEn').value = p.title_en;
+        document.getElementById('descTr').value = p.desc_tr;
+        document.getElementById('descEn').value = p.desc_en;
+        document.getElementById('typeTr').value = p.type_tr;
+        document.getElementById('typeEn').value = p.type_en;
+        document.getElementById('image').value = p.image;
+        document.getElementById('url').value = p.url;
+
+        document.getElementById('btnAdd').style.display = 'none';
+        document.getElementById('btnSave').style.display = 'block';
+        document.getElementById('btnCancel').style.display = 'block';
+
+        renderList();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function saveEdit() {
+        if(!editingId) return;
+
+        const titleTr = document.getElementById('titleTr').value;
+        const url = document.getElementById('url').value;
+        if (!validateInputs(titleTr, url)) return;
+
+        const index = projects.findIndex(p => p.id === editingId);
+        if(index !== -1) {
+            projects[index] = {
+                id: editingId,
+                title_tr: titleTr.trim(),
+                title_en: document.getElementById('titleEn').value.trim() || titleTr.trim(),
+                desc_tr: document.getElementById('descTr').value.trim(),
+                desc_en: document.getElementById('descEn').value.trim(),
+                type_tr: document.getElementById('typeTr').value.trim() || 'Website',
+                type_en: document.getElementById('typeEn').value.trim() || 'Website',
+                image: document.getElementById('image').value.trim(),
+                url: url.trim()
+            };
+        }
+
+        resetForm();
+    }
+
+    function resetForm() {
+        editingId = null;
+        document.getElementById('titleTr').value = '';
+        document.getElementById('titleEn').value = '';
+        document.getElementById('descTr').value = '';
+        document.getElementById('descEn').value = '';
+        document.getElementById('typeTr').value = 'Website';
+        document.getElementById('typeEn').value = 'Website';
+        document.getElementById('image').value = '';
+        document.getElementById('url').value = '';
+
+        document.getElementById('btnAdd').style.display = 'block';
+        document.getElementById('btnSave').style.display = 'none';
+        document.getElementById('btnCancel').style.display = 'none';
+
+        renderList();
+    }
+
+    function deleteProject(id) {
+        if(editingId === id) resetForm();
+        projects = projects.filter(p => p.id !== id);
+        renderList();
+    }
+
+    function downloadFile(content, fileName, mimeType) {
+        const blob = new Blob([content], { type: mimeType });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+    }
+
+    function generateIndexHTML(data) {
+        const safeJsonProjects = JSON.stringify(data, null, 4).replace(/</g, '\\u003c');
+        return `<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Naransula">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Naransula</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif; background: #08080a; color: #ffffff; line-height: 1.6; font-size: 16px; overflow-x: hidden; }
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.015) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.015) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+        .container { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 0 32px; }
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 32px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 60px; }
+        .nav-left { font-size: 16px; font-weight: 600; letter-spacing: -0.3px; }
+        .nav-right { display: flex; gap: 28px; align-items: center; }
+        .nav-btn { background: none; border: none; font: inherit; color: #aaa; text-decoration: none; font-size: 13px; transition: color 0.2s; cursor: pointer; padding: 0; }
+        .nav-btn:hover, .nav-btn.active { color: #fff; }
+        .divider { width: 1px; height: 16px; background: rgba(255, 255, 255, 0.1); }
+        section { display: none; animation: fadeIn 0.5s ease-out; }
+        section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .hero { padding: 100px 0 120px 0; min-height: 60vh; display: flex; flex-direction: column; justify-content: center; }
+        .hero h1 { font-size: 64px; font-weight: 700; line-height: 1.1; margin-bottom: 40px; letter-spacing: -1.5px; }
+        .cta-group { display: flex; gap: 32px; flex-wrap: wrap; align-items: center; }
+        .cta-link { display: inline-flex; align-items: center; gap: 6px; color: #aaa; text-decoration: none; font-size: 13px; transition: color 0.2s; cursor: pointer; background: none; border: none; font: inherit; }
+        .cta-link:hover { color: #fff; }
+        .cta-link.primary { color: #fff; background: rgba(255, 255, 255, 0.08); padding: 10px 18px; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 3px; font-weight: 500; transition: all 0.2s; }
+        .cta-link.primary:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.3); }
+        .projects-header { padding: 60px 0 60px 0; }
+        .projects-header h1 { font-size: 48px; font-weight: 700; letter-spacing: -1px; }
+        .back-link { display: inline-flex; align-items: center; gap: 6px; color: #aaa; text-decoration: none; font-size: 13px; margin-bottom: 40px; transition: color 0.2s; cursor: pointer; background: none; border: none; font: inherit; }
+        .back-link:hover { color: #fff; }
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; padding-bottom: 120px; }
+        .project-card { display: flex; flex-direction: column; text-decoration: none; color: inherit; border-radius: 2px; padding: 0; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); transition: all 0.3s cubic-bezier(0.33, 1, 0.68, 1); position: relative; overflow: hidden; }
+        .project-image { width: 100%; height: 200px; overflow: hidden; background: rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; }
+        .project-image img { width: 100%; height: 100%; object-fit: contain; transition: transform 0.3s ease; }
+        .project-card:hover .project-image img { transform: scale(1.05); }
+        .project-card > :not(.project-image) { padding: 0 20px; }
+        .project-card .project-label { padding-top: 20px; }
+        .project-card:last-child { padding-bottom: 20px; }
+        .project-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 100%); opacity: 0; transition: opacity 0.3s ease; }
+        .project-card:hover { background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.12); transform: translateY(-3px); }
+        .project-card:hover::before { opacity: 1; }
+        .project-label { font-size: 11px; color: #777; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; font-weight: 500; }
+        .project-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; line-height: 1.3; position: relative; z-index: 1; }
+        .project-desc { font-size: 13px; color: #999; margin-bottom: 14px; flex-grow: 1; position: relative; z-index: 1; line-height: 1.5; }
+        @media (max-width: 768px) { .container { padding: 0 20px; } .nav { padding: 20px 0; } .hero { padding: 60px 0 80px 0; } .hero h1 { font-size: 42px; } .projects-header h1 { font-size: 36px; } .projects-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; } .nav-right { gap: 16px; } }
+        @media (max-width: 480px) { .container { padding: 0 16px; } .nav { padding: 16px 0; } .hero h1 { font-size: 28px; margin-bottom: 32px; } .projects-header h1 { font-size: 28px; } .projects-grid { grid-template-columns: 1fr; gap: 12px; } .nav-btn { font-size: 12px; } }
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    <div class="container">
+        <nav class="nav">
+            <div class="nav-left">Naransula</div>
+            <div class="nav-right">
+                <button type="button" class="nav-btn active" onclick="navTo('home')" data-link="home">Anasayfa</button>
+                <button type="button" class="nav-btn" onclick="navTo('projects')" data-link="projects">Projeler</button>
+                <div class="divider"></div>
+                <button type="button" class="nav-btn" onclick="toggleLang('tr')" data-lang="tr">TR</button>
+                <button type="button" class="nav-btn" onclick="toggleLang('en')" data-lang="en">EN</button>
+            </div>
+        </nav>
+        <section id="tr-home" class="active">
+            <div class="hero">
+                <h1>Naransula</h1>
+                <div class="cta-group">
+                    <button type="button" class="cta-link primary" onclick="showSection('tr-projects')">Projeler →</button>
+                    <div style="display: flex; gap: 20px;">
+                        <a class="cta-link" href="mailto:naransula@outlook.com">Email ✉</a>
+                        <a class="cta-link" href="https://github.com/naransula" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="tr-projects">
+            <button type="button" class="back-link" onclick="showSection('tr-home')">← Geri</button>
+            <div class="projects-header"><h1>Projeler</h1></div>
+            <div class="projects-grid" id="tr-projects-grid"></div>
+        </section>
+        <section id="en-home">
+            <div class="hero">
+                <h1>Naransula</h1>
+                <div class="cta-group">
+                    <button type="button" class="cta-link primary" onclick="showSection('en-projects')">Projects →</button>
+                    <div style="display: flex; gap: 20px;">
+                        <a class="cta-link" href="mailto:naransula@outlook.com">Email ✉</a>
+                        <a class="cta-link" href="https://github.com/naransula" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="en-projects">
+            <button type="button" class="back-link" onclick="showSection('en-home')">← Back</button>
+            <div class="projects-header"><h1>Projects</h1></div>
+            <div class="projects-grid" id="en-projects-grid"></div>
+        </section>
+    </div>
+    <script>
+        let currentLang = 'tr';
+        let projects = ${safeJsonProjects};
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function renderProjects() {
+            const trGrid = document.getElementById('tr-projects-grid');
+            const enGrid = document.getElementById('en-projects-grid');
+            
+            trGrid.innerHTML = projects.map(p => 
+                '<a href="' + escapeHtml(p.url) + '" target="_blank" rel="noopener noreferrer" class="project-card">' +
+                (p.image ? '<div class="project-image"><img src="' + escapeHtml(p.image) + '" alt="' + escapeHtml(p.title_tr) + '"></div>' : '') +
+                '<span class="project-label">' + escapeHtml(p.type_tr) + '</span>' +
+                '<h3 class="project-title">' + escapeHtml(p.title_tr) + '</h3>' +
+                (p.desc_tr ? '<p class="project-desc">' + escapeHtml(p.desc_tr) + '</p>' : '') +
+                '</a>'
+            ).join('');
+
+            enGrid.innerHTML = projects.map(p => 
+                '<a href="' + escapeHtml(p.url) + '" target="_blank" rel="noopener noreferrer" class="project-card">' +
+                (p.image ? '<div class="project-image"><img src="' + escapeHtml(p.image) + '" alt="' + escapeHtml(p.title_en) + '"></div>' : '') +
+                '<span class="project-label">' + escapeHtml(p.type_en) + '</span>' +
+                '<h3 class="project-title">' + escapeHtml(p.title_en) + '</h3>' +
+                (p.desc_en ? '<p class="project-desc">' + escapeHtml(p.desc_en) + '</p>' : '') +
+                '</a>'
+            ).join('');
+        }
+
+        function navTo(page) {
+            showSection(currentLang + '-' + page);
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            currentLang = sectionId.split('-')[0];
+            updateNav(); 
+            updateNavText();
+        }
+
+        function toggleLang(lang) {
+            currentLang = lang;
+            const section = document.querySelector('section.active');
+            showSection(lang + '-' + section.id.split('-')[1]);
+        }
+
+        function updateNav() {
+            document.querySelectorAll('[data-lang]').forEach(el => el.classList.remove('active'));
+            document.querySelector('[data-lang="' + currentLang + '"]').classList.add('active');
+            const section = document.querySelector('section.active');
+            if (section) {
+                const linkType = section.id.split('-')[1];
+                document.querySelectorAll('[data-link]').forEach(el => {
+                    el.classList.remove('active');
+                    if (el.dataset.link === linkType) el.classList.add('active');
+                });
+            }
+        }
+
+        function updateNavText() {
+            const projectsLink = document.querySelector('[data-link="projects"]');
+            const homeLink = document.querySelector('[data-link="home"]');
+            if (currentLang === 'tr') { 
+                homeLink.textContent = 'Anasayfa'; 
+                projectsLink.textContent = 'Projeler'; 
+            } else { 
+                homeLink.textContent = 'Home'; 
+                projectsLink.textContent = 'Projects'; 
+            }
+        }
+
+        renderProjects(); 
+        updateNavText();
+
+        (function() {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let mouse = { x: null, y: null, radius: 150 };
+
+            window.addEventListener('mousemove', function(e) { mouse.x = e.x; mouse.y = e.y; });
+            window.addEventListener('mouseleave', function() { mouse.x = null; mouse.y = null; });
+            
+            function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            function initParticles() {
+                const count = Math.min(80, Math.floor((canvas.width * canvas.height) / 15000));
+                particles = [];
+                for (let i = 0; i < count; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        r: Math.random() * 1.5 + 1
+                    });
+                }
+            }
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fill();
+                });
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 140) {
+                            ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = 'rgba(255,255,255,' + ((1 - dist / 140) * 0.25) + ')'; ctx.stroke();
+                        }
+                    }
+                }
+                if (mouse.x !== null && mouse.y !== null) {
+                    for (let i = 0; i < particles.length; i++) {
+                        const dx = mouse.x - particles[i].x, dy = mouse.y - particles[i].y, dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < mouse.radius) {
+                            ctx.beginPath(); ctx.moveTo(mouse.x, mouse.y); ctx.lineTo(particles[i].x, particles[i].y);
+                            ctx.strokeStyle = 'rgba(255,255,255,' + ((1 - dist / mouse.radius) * 0.35) + ')'; ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(draw);
+            }
+            resize(); 
+            initParticles(); 
+            draw();
+            window.addEventListener('resize', () => { resize(); initParticles(); });
+        })();
+    <\/script>
+</body>
+</html>`;
+    }
+
+    function exportFiles() {
+        const indexContent = generateIndexHTML(projects);
+
+        // Reconstruct admin.html source safely without reading dynamic DOM state
+        const updatedAdminHTML = "<!DOCTYPE html>\n" + document.documentElement.outerHTML.replace(
+            /const defaultProjects = \[[\s\S]*?\];/,
+            "const defaultProjects = " + JSON.stringify(projects, null, 8) + ";"
+        );
+
+        downloadFile(indexContent, 'index.html', 'text/html');
+        setTimeout(() => {
+            downloadFile(updatedAdminHTML, 'admin.html', 'text/html');
+        }, 300);
+    }
+
+    renderList();
+</script>
+
+</body></html>
