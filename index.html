@@ -3,18 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KJWETJ2X8T"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-KJWETJ2X8T');
+    </script>
     <meta name="description" content="Naransula">
     <meta name="theme-color" content="#0a0a0a">
     <title>Naransula</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif; background: #08080a; color: #ffffff; line-height: 1.6; font-size: 16px; overflow-x: hidden; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif; background: #08080a; color: #ffffff; line-height: 1.6; font-size: 16px; overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column; }
         #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
         body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.015) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.015) 0%, transparent 50%); pointer-events: none; z-index: 0; }
-        .container { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 0 32px; }
+        .container { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 0 32px; flex: 1; width: 100%; }
         .nav { display: flex; justify-content: space-between; align-items: center; padding: 32px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 60px; }
-        .nav-left { font-size: 16px; font-weight: 600; letter-spacing: -0.3px; }
+        .nav-left { font-size: 16px; font-weight: 600; letter-spacing: -0.3px; cursor: pointer; }
         .nav-right { display: flex; gap: 28px; align-items: center; }
         .nav-btn { background: none; border: none; font: inherit; color: #aaa; text-decoration: none; font-size: 13px; transition: color 0.2s; cursor: pointer; padding: 0; }
         .nav-btn:hover, .nav-btn.active { color: #fff; }
@@ -33,7 +42,7 @@
         .projects-header h1 { font-size: 48px; font-weight: 700; letter-spacing: -1px; }
         .back-link { display: inline-flex; align-items: center; gap: 6px; color: #aaa; text-decoration: none; font-size: 13px; margin-bottom: 40px; transition: color 0.2s; cursor: pointer; background: none; border: none; font: inherit; }
         .back-link:hover { color: #fff; }
-        .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; padding-bottom: 120px; }
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; padding-bottom: 80px; }
         .project-card { display: flex; flex-direction: column; text-decoration: none; color: inherit; border-radius: 2px; padding: 0; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); transition: all 0.3s cubic-bezier(0.33, 1, 0.68, 1); position: relative; overflow: hidden; }
         .project-image { width: 100%; height: 200px; overflow: hidden; background: rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; }
         .project-image img { width: 100%; height: 100%; object-fit: contain; transition: transform 0.3s ease; }
@@ -47,7 +56,13 @@
         .project-label { font-size: 11px; color: #777; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; font-weight: 500; }
         .project-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; line-height: 1.3; position: relative; z-index: 1; }
         .project-desc { font-size: 13px; color: #999; margin-bottom: 14px; flex-grow: 1; position: relative; z-index: 1; line-height: 1.5; }
-        @media (max-width: 768px) { .container { padding: 0 20px; } .nav { padding: 20px 0; } .hero { padding: 60px 0 80px 0; } .hero h1 { font-size: 42px; } .projects-header h1 { font-size: 36px; } .projects-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; } .nav-right { gap: 16px; } }
+        .legal-content { max-width: 700px; padding: 40px 0 80px 0; }
+        .legal-content h1 { font-size: 36px; margin-bottom: 24px; font-weight: 700; }
+        .legal-content h2 { font-size: 18px; margin: 28px 0 12px 0; color: #fff; }
+        .legal-content p { color: #aaa; font-size: 14px; margin-bottom: 16px; line-height: 1.6; }
+        .footer { position: relative; z-index: 1; max-width: 1000px; width: 100%; margin: 0 auto; padding: 32px; border-top: 1px solid rgba(255, 255, 255, 0.06); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; }
+        .footer-links { display: flex; gap: 16px; }
+        @media (max-width: 768px) { .container { padding: 0 20px; } .nav { padding: 20px 0; } .hero { padding: 60px 0 80px 0; } .hero h1 { font-size: 42px; } .projects-header h1 { font-size: 36px; } .projects-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; } .nav-right { gap: 16px; } .footer { flex-direction: column; gap: 12px; text-align: center; padding: 24px 20px; } }
         @media (max-width: 480px) { .container { padding: 0 16px; } .nav { padding: 16px 0; } .hero h1 { font-size: 28px; margin-bottom: 32px; } .projects-header h1 { font-size: 28px; } .projects-grid { grid-template-columns: 1fr; gap: 12px; } .nav-btn { font-size: 12px; } }
     </style>
 </head>
@@ -55,7 +70,7 @@
     <canvas id="bg-canvas"></canvas>
     <div class="container">
         <nav class="nav">
-            <div class="nav-left">Naransula</div>
+            <div class="nav-left" onclick="navTo('home')">Naransula</div>
             <div class="nav-right">
                 <button type="button" class="nav-btn active" onclick="navTo('home')" data-link="home">Anasayfa</button>
                 <button type="button" class="nav-btn" onclick="navTo('projects')" data-link="projects">Projeler</button>
@@ -81,6 +96,18 @@
             <div class="projects-header"><h1>Projeler</h1></div>
             <div class="projects-grid" id="tr-projects-grid"></div>
         </section>
+        <section id="tr-privacy">
+            <button type="button" class="back-link" onclick="showSection('tr-home')">← Geri</button>
+            <div class="legal-content">
+                <h1>Gizlilik Politikası</h1>
+                <h2>1. Toplanan Veriler ve Çerezler</h2>
+                <p>Bu web sitesi, ziyaretçi trafiğini analiz etmek ve kullanıcı deneyimini geliştirmek amacıyla Google Analytics (G-KJWETJ2X8T) hizmetini kullanmaktadır. Bu işlem için tarayıcınıza çerezler (cookies) veya benzeri tanımlayıcılar yerleştirilebilir.</p>
+                <h2>2. Analitik Hizmetleri ve Kullanımı</h2>
+                <p>Google Analytics aracılığıyla anonimleştirilmiş kullanım verileri işlenmektedir. Bu veriler IP adresi, cihaz ve tarayıcı türü, ziyaret edilen sayfalar ve sitede kalma süresi gibi istatistiki bilgileri içerir. Google'ın veri işleme politikaları hakkında ayrıntılı bilgiye <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" style="color: #60a5fa;">Google Gizlilik Politikası</a> üzerinden ulaşabilirsiniz.</p>
+                <h2>3. Sunucu Kayıtları ve Dış Bağlantılar</h2>
+                <p>Web sitemiz GitHub Pages üzerinde barındırılmaktadır. Güvenlik ve operational amaçlarla standart sunucu günlükleri tutulabilir. Ayrıca sitemiz harici web sitelerine bağlantılar içerebilir; bu dış sitelerin gizlilik uygulamalarından sorumlu değiliz.</p>
+            </div>
+        </section>
         <section id="en-home">
             <div class="hero">
                 <h1>Naransula</h1>
@@ -98,7 +125,27 @@
             <div class="projects-header"><h1>Projects</h1></div>
             <div class="projects-grid" id="en-projects-grid"></div>
         </section>
+        <section id="en-privacy">
+            <button type="button" class="back-link" onclick="showSection('en-home')">← Back</button>
+            <div class="legal-content">
+                <h1>Privacy Policy</h1>
+                <h2>1. Data Collection & Cookies</h2>
+                <p>This website uses Google Analytics (G-KJWETJ2X8T) to analyze website traffic and optimize user experience. Cookies and similar identifiers may be saved on your device for this purpose.</p>
+                <h2>2. Analytics Services & Usage</h2>
+                <p>Google Analytics collects anonymized interaction data such as IP address, browser type, device information, pages viewed, and session metrics. For more information on how Google manages collected data, please consult the <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" style="color: #60a5fa;">Google Privacy Policy</a>.</p>
+                <h2>3. Server Logs & External Links</h2>
+                <p>This site is hosted on GitHub Pages, which automatically logs standard technical requests for operational integrity. We are not responsible for the privacy practices or content of third-party external links.</p>
+            </div>
+        </section>
     </div>
+
+    <footer class="footer">
+        <div>© 2026 Naransula. All rights reserved.</div>
+        <div class="footer-links">
+            <button type="button" class="nav-btn" onclick="navTo('privacy')" id="privacy-footer-btn">Gizlilik Politikası</button>
+        </div>
+    </footer>
+
     <script>
         let currentLang = 'tr';
         let projects = [
@@ -165,21 +212,28 @@
 
         function showSection(sectionId) {
             document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-            currentLang = sectionId.split('-')[0];
-            updateNav(); 
-            updateNavText();
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                currentLang = sectionId.split('-')[0];
+                updateNav(); 
+                updateNavText();
+            }
         }
 
         function toggleLang(lang) {
             currentLang = lang;
             const section = document.querySelector('section.active');
-            showSection(lang + '-' + section.id.split('-')[1]);
+            if (section) {
+                showSection(lang + '-' + section.id.split('-')[1]);
+            }
         }
 
         function updateNav() {
             document.querySelectorAll('[data-lang]').forEach(el => el.classList.remove('active'));
-            document.querySelector('[data-lang="' + currentLang + '"]').classList.add('active');
+            const currentLangBtn = document.querySelector('[data-lang="' + currentLang + '"]');
+            if (currentLangBtn) currentLangBtn.classList.add('active');
+            
             const section = document.querySelector('section.active');
             if (section) {
                 const linkType = section.id.split('-')[1];
@@ -193,12 +247,16 @@
         function updateNavText() {
             const projectsLink = document.querySelector('[data-link="projects"]');
             const homeLink = document.querySelector('[data-link="home"]');
+            const privacyBtn = document.getElementById('privacy-footer-btn');
+            
             if (currentLang === 'tr') { 
-                homeLink.textContent = 'Anasayfa'; 
-                projectsLink.textContent = 'Projeler'; 
+                if (homeLink) homeLink.textContent = 'Anasayfa'; 
+                if (projectsLink) projectsLink.textContent = 'Projeler'; 
+                if (privacyBtn) privacyBtn.textContent = 'Gizlilik Politikası';
             } else { 
-                homeLink.textContent = 'Home'; 
-                projectsLink.textContent = 'Projects'; 
+                if (homeLink) homeLink.textContent = 'Home'; 
+                if (projectsLink) projectsLink.textContent = 'Projects'; 
+                if (privacyBtn) privacyBtn.textContent = 'Privacy Policy';
             }
         }
 
