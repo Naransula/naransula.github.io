@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -72,14 +72,14 @@
         <nav class="nav">
             <div class="nav-left" onclick="navTo('home')">Naransula</div>
             <div class="nav-right">
-                <button type="button" class="nav-btn active" onclick="navTo('home')" data-link="home">Anasayfa</button>
-                <button type="button" class="nav-btn" onclick="navTo('projects')" data-link="projects">Projeler</button>
+                <button type="button" class="nav-btn active" onclick="navTo('home')" data-link="home">Home</button>
+                <button type="button" class="nav-btn" onclick="navTo('projects')" data-link="projects">Projects</button>
                 <div class="divider"></div>
+                <button type="button" class="nav-btn active" onclick="toggleLang('en')" data-lang="en">EN</button>
                 <button type="button" class="nav-btn" onclick="toggleLang('tr')" data-lang="tr">TR</button>
-                <button type="button" class="nav-btn" onclick="toggleLang('en')" data-lang="en">EN</button>
             </div>
         </nav>
-        <section id="tr-home" class="active">
+        <section id="tr-home">
             <div class="hero">
                 <h1>Naransula</h1>
                 <div class="cta-group">
@@ -100,15 +100,13 @@
             <button type="button" class="back-link" onclick="showSection('tr-home')">← Geri</button>
             <div class="legal-content">
                 <h1>Gizlilik Politikası</h1>
-                <h2>1. Toplanan Veriler ve Çerezler</h2>
-                <p>Bu web sitesi, ziyaretçi trafiğini analiz etmek ve kullanıcı deneyimini geliştirmek amacıyla Google Analytics (G-KJWETJ2X8T) hizmetini kullanmaktadır. Bu işlem için tarayıcınıza çerezler (cookies) veya benzeri tanımlayıcılar yerleştirilebilir.</p>
-                <h2>2. Analitik Hizmetleri ve Kullanımı</h2>
-                <p>Google Analytics aracılığıyla anonimleştirilmiş kullanım verileri işlenmektedir. Bu veriler IP adresi, cihaz ve tarayıcı türü, ziyaret edilen sayfalar ve sitede kalma süresi gibi istatistiki bilgileri içerir. Google'ın veri işleme politikaları hakkında ayrıntılı bilgiye <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" style="color: #60a5fa;">Google Gizlilik Politikası</a> üzerinden ulaşabilirsiniz.</p>
-                <h2>3. Sunucu Kayıtları ve Dış Bağlantılar</h2>
-                <p>Web sitemiz GitHub Pages üzerinde barındırılmaktadır. Güvenlik ve operational amaçlarla standart sunucu günlükleri tutulabilir. Ayrıca sitemiz harici web sitelerine bağlantılar içerebilir; bu dış sitelerin gizlilik uygulamalarından sorumlu değiliz.</p>
+                <p>Bu sayfa, bu siteyi ziyaret ettiğinizde bilgilerinizle ilgili neler olduğunu sade bir dille açıklar. Bu web sitesi, GitHub, Inc. tarafından sağlanan bir hizmet olan GitHub Pages üzerinde barındırılmaktadır; bu nedenle herhangi bir sayfayı yüklemeniz, IP adresiniz, talebinizin tarih ve saati, kullandığınız tarayıcı ve cihaz ile talep ettiğiniz sayfa gibi standart teknik verilerin GitHub'ın kendi altyapısından geçmesine ve güvenlik ile operasyonel amaçlarla kaydedilmesine neden olabilir; bu kayıt işlemi site sahibi tarafından değil, GitHub'ın kendi gizlilik uygulamaları çerçevesinde yönetilir ve ayrıntılara <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer" style="color: #60a5fa;">GitHub Gizlilik Bildirimi</a> üzerinden ulaşabilirsiniz.</p>
+                <p>Ziyaretçilerin siteyi nasıl kullandığını anlamak ve zaman içinde geliştirmek amacıyla bu web sitesi ayrıca Google Analytics hizmetini kullanmaktadır. Google Analytics, tarayıcınıza küçük çerezler veya benzeri tanımlayıcılar yerleştirerek; IP adresinizden türetilen yaklaşık konumunuz, kullandığınız cihaz, işletim sistemi ve tarayıcı türü, görüntülediğiniz sayfalar, sitede geçirdiğiniz süre, sizi buraya yönlendiren kaynak ve içerikle nasıl etkileşime girdiğiniz gibi bilgileri toplar. Bu bilgiler, site sahibi adına Google tarafından işlenir ve yalnızca toplulaştırılmış istatistikler oluşturmak amacıyla kullanılır; site sahibi bu veriler üzerinden ziyaretçileri tek tek tanımlamaya çalışmaz ve veriler <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" style="color: #60a5fa;">Google Gizlilik Politikası</a>'na göre ele alınır. Bu şekilde izlenmek istemiyorsanız, tarayıcı ayarlarınızdan çerezleri engelleyebilir, gizli/özel tarama modunu kullanabilir, analiz betiklerini engelleyen bir tarayıcı uzantısı yükleyebilir veya Google'ın resmi Analytics devre dışı bırakma eklentisini kurabilirsiniz; bunu yapmanız siteyi normal şekilde kullanmanızı engellemez.</p>
+                <p>Bu sitede herhangi bir kayıt formu, iletişim formu, yorum bölümü veya üyelik sistemi bulunmamaktadır; bu nedenle adınız, e-posta adresiniz veya ödeme bilgileriniz gibi kişisel bilgiler bu web sitesine hiçbir zaman doğrudan girilmez, gönderilmez veya bu site tarafından saklanmaz. Site sahibiyle iletişime geçmenin tek yolu sunulan e-posta bağlantısıdır; bu bağlantı yalnızca kendi e-posta uygulamanızı açar ve bu şekilde göndermeyi tercih ettiğiniz herhangi bir mesaj, bu web sitesi tarafından değil, e-posta sağlayıcınız ve alıcının gelen kutusu tarafından işlenir.</p>
+                <p>Bu site ayrıca kişisel ve üçüncü taraf projeler ile sosyal/profesyonel profiller de dahil olmak üzere harici web sitelerine bağlantılar içerir. Bu harici adreslerden birine tıkladığınızda bu gizlilik politikası artık geçerli olmaz ve site sahibi bu diğer sitelerin içeriği veya gizlilik uygulamaları üzerinde hiçbir kontrole veya sorumluluğa sahip değildir; ziyaret ettiğiniz herhangi bir harici sitenin kendi gizlilik politikasını incelemeniz önerilir. Bu site aracılığıyla toplanan hiçbir bilgi, ne kadar sınırlı olursa olsun, üçüncü taraflara satılmaz ve yalnızca yukarıda açıklanan analiz hizmetini sağlamak için gerektiği ölçüde Google ile paylaşılır. Bağlantınızın güvenliğine yardımcı olmak amacıyla sitenin HTTPS üzerinden sunulması gibi makul teknik önlemler alınmış olsa da, internet üzerinden hiçbir iletim yönteminin tamamen güvenli olacağı garanti edilemez. Bu site çocuklara yönelik değildir ve site sahibinin çocuk olduğunu bildiği herhangi bir kişiden bilerek bilgi toplanmaz. Bu politika, sitede veya kullanılan hizmetlerde yapılan değişiklikleri yansıtmak amacıyla zaman zaman güncellenebilir ve burada yayınlanan sürüm her zaman geçerli olan sürümdür; bir güncellemeden sonra siteyi kullanmaya devam etmeniz, güncel sürümü kabul ettiğiniz anlamına gelir. Bu politikayla ilgili herhangi bir sorunuz varsa, ana sayfadaki e-posta bağlantısı üzerinden iletişime geçmekten çekinmeyin.</p>
             </div>
         </section>
-        <section id="en-home">
+        <section id="en-home" class="active">
             <div class="hero">
                 <h1>Naransula</h1>
                 <div class="cta-group">
@@ -129,12 +127,10 @@
             <button type="button" class="back-link" onclick="showSection('en-home')">← Back</button>
             <div class="legal-content">
                 <h1>Privacy Policy</h1>
-                <h2>1. Data Collection & Cookies</h2>
-                <p>This website uses Google Analytics (G-KJWETJ2X8T) to analyze website traffic and optimize user experience. Cookies and similar identifiers may be saved on your device for this purpose.</p>
-                <h2>2. Analytics Services & Usage</h2>
-                <p>Google Analytics collects anonymized interaction data such as IP address, browser type, device information, pages viewed, and session metrics. For more information on how Google manages collected data, please consult the <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" style="color: #60a5fa;">Google Privacy Policy</a>.</p>
-                <h2>3. Server Logs & External Links</h2>
-                <p>This site is hosted on GitHub Pages, which automatically logs standard technical requests for operational integrity. We are not responsible for the privacy practices or content of third-party external links.</p>
+                <p>This page explains, in plain terms, what happens with information when you visit this site. This website is hosted on GitHub Pages, a service provided by GitHub, Inc., so simply loading any page here causes standard technical data — such as your IP address, the date and time of your request, the browser and device you are using, and the page you requested — to pass through and potentially be logged by GitHub's own infrastructure for security and operational purposes; this logging is governed by GitHub's own practices rather than by the owner of this site, and you can read more in the <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer" style="color: #60a5fa;">GitHub General Privacy Statement</a>.</p>
+                <p>To understand how visitors use this site and to improve it over time, this website also uses Google Analytics. Google Analytics works by placing small cookies or similar identifiers in your browser and collecting information such as your approximate location (derived from your IP address), the type of device, operating system and browser you are using, which pages you view, how long you stay, which site referred you here, and how you interact with the content. This information is processed by Google on behalf of the site owner and is used only to generate aggregated statistics; the site owner does not attempt to individually identify visitors from this data, and it is handled according to the <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" style="color: #60a5fa;">Google Privacy Policy</a>. If you would prefer not to be tracked in this way, you can adjust your browser settings to block cookies, use private or incognito browsing, install a browser extension that blocks analytics scripts, or install the official Google Analytics opt-out add-on; doing so will not prevent you from using the site normally.</p>
+                <p>This site does not include any sign-up forms, contact forms, comment sections, or account systems, so no personal information such as your name, email address, or payment details is ever typed into, submitted to, or stored by this website directly. The only way to contact the site owner is through the email link provided, which simply opens your own email application; any message you choose to send that way is handled by your email provider and by the recipient's inbox, not by this website.</p>
+                <p>This site also contains links to external websites, including personal and third-party projects and social or professional profiles. Once you click through to one of these external destinations, this privacy policy no longer applies, and the site owner has no control over, and takes no responsibility for, the content or privacy practices of those other sites; it is a good idea to review the privacy policy of any external site you visit. No information collected through this site, however limited, is ever sold to third parties, and it is shared only with Google to the extent necessary to provide the analytics service described above. Reasonable technical measures, including serving the site over HTTPS, are used to help keep your connection secure, although no method of transmission over the internet can be guaranteed to be completely secure. This site is not directed at children, and it does not knowingly collect information from anyone the owner knows to be a child. This policy may be updated from time to time to reflect changes to the site or to the services it uses, and the version posted here is always the current one; continuing to use the site after an update means you accept the current version. If you have any questions about this policy, feel free to reach out through the email link on the homepage.</p>
             </div>
         </section>
     </div>
@@ -142,12 +138,12 @@
     <footer class="footer">
         <div>© 2026 Naransula. All rights reserved.</div>
         <div class="footer-links">
-            <button type="button" class="nav-btn" onclick="navTo('privacy')" id="privacy-footer-btn">Gizlilik Politikası</button>
+            <button type="button" class="nav-btn" onclick="navTo('privacy')" id="privacy-footer-btn">Privacy Policy</button>
         </div>
     </footer>
 
     <script>
-        let currentLang = 'tr';
+        let currentLang = 'en';
         let projects = [
     {
         "id": 1,
@@ -159,17 +155,6 @@
         "type_en": "Website",
         "image": "https://naransula.com/images/tayfun-tasdemir.png",
         "url": "http://tayfuntasdemir.com/"
-    },
-    {
-        "id": 2,
-        "title_tr": "Injun46",
-        "title_en": "Injun46",
-        "desc_tr": "E-ticaret ve portfolio platformu.",
-        "desc_en": "E-commerce and portfolio platform.",
-        "type_tr": "Website",
-        "type_en": "Website",
-        "image": "",
-        "url": "https://injun46.com/"
     }
 ];
 
@@ -260,7 +245,8 @@
             }
         }
 
-        renderProjects(); 
+        renderProjects();
+        updateNav();
         updateNavText();
 
         (function() {
