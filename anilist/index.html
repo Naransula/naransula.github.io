@@ -72,7 +72,6 @@ button:focus-visible,a:focus-visible{outline:1px solid #fff;outline-offset:3px}
   <div class="bar">
     <div class="chips" id="chips"></div>
     <input id="q" type="search" data-ph="search" placeholder="Search titles">
-    <select id="sort" aria-label="Sort by"><option value="score" data-i="score">Score</option><option value="title" data-i="title">Title</option><option value="progress" data-i="progress">Progress</option></select>
   </div>
   <div id="out" class="msg">Loading…</div>
 </div>
@@ -90,11 +89,11 @@ const USERNAME = "Naransula";
 
 const QUERY = `query($u:String,$t:MediaType){MediaListCollection(userName:$u,type:$t){lists{entries{
   status score(format:POINT_10_DECIMAL) progress
-  media{id siteUrl episodes chapters title{romaji english} coverImage{large}}}}}}`;
+  media{id siteUrl startDate{year month day} episodes chapters title{romaji english} coverImage{large}}}}}}`;
 const I18N = {
-  en:{privacy:"Privacy Policy",home:"Home",projects:"Projects",anime:"Anime",manga:"Manga",score:"Score",title:"Title",progress:"Progress",search:"Search titles",loading:"Loading…",none:"No titles match.",empty:"This list is empty.",err:"Couldn't load the list",ep:"ep",ch:"ch",
+  en:{watching:"Watching",reading:"Reading",privacy:"Privacy Policy",home:"Home",projects:"Projects",anime:"Anime",manga:"Manga",score:"Score",title:"Title",progress:"Progress",search:"Search titles",loading:"Loading…",none:"No titles match.",empty:"This list is empty.",err:"Couldn't load the list",ep:"ep",ch:"ch",
       CURRENT:"In progress",PLANNING:"Planned",COMPLETED:"Completed",PAUSED:"Paused",DROPPED:"Dropped",REPEATING:"Repeating"},
-  tr:{privacy:"Gizlilik Politikası",home:"Anasayfa",projects:"Projeler",anime:"Anime",manga:"Manga",score:"Puan",title:"Başlık",progress:"İlerleme",search:"Başlık ara",loading:"Yükleniyor…",none:"Eşleşen başlık yok.",empty:"Bu liste boş.",err:"Liste yüklenemedi",ep:"böl.",ch:"böl.",
+  tr:{watching:"İzleniyor",reading:"Okunuyor",privacy:"Gizlilik Politikası",home:"Anasayfa",projects:"Projeler",anime:"Anime",manga:"Manga",score:"Puan",title:"Başlık",progress:"İlerleme",search:"Başlık ara",loading:"Yükleniyor…",none:"Eşleşen başlık yok.",empty:"Bu liste boş.",err:"Liste yüklenemedi",ep:"böl.",ch:"böl.",
       CURRENT:"Devam ediyor",PLANNING:"Planlanan",COMPLETED:"Tamamlanan",PAUSED:"Beklemede",DROPPED:"Bırakılan",REPEATING:"Tekrar"}
 };
 const STATUS = {CURRENT:1,PLANNING:1,COMPLETED:1,PAUSED:1,DROPPED:1,REPEATING:1};
@@ -114,7 +113,7 @@ $("#who").textContent = "@" + USERNAME;
 
 async function load(type){
   if (state.data[type]) return state.data[type];
-  const key = `anilist:${USERNAME}:${type}`;
+  const key = `anilist2:${USERNAME}:${type}`;
   try { const c = JSON.parse(sessionStorage.getItem(key)); if (c && Date.now()-c.t < 600000) return state.data[type]=c.d; } catch(e){}
   const r = await fetch("https://graphql.anilist.co", {
     method:"POST", headers:{"Content-Type":"application/json",Accept:"application/json"},
@@ -137,15 +136,19 @@ function render(){
   const all = state.data[state.type] || [];
   const counts = {};
   all.forEach(e => counts[e.status] = (counts[e.status]||0)+1);
-  const order = Object.keys(STATUS).filter(s => counts[s]);
+  const order = ["CURRENT","COMPLETED","PLANNING","PAUSED","DROPPED","REPEATING"].filter(s => counts[s]);
   if (!counts[state.status]) state.status = order[0];
   $("#chips").innerHTML = order.map(s =>
-    `<button class="chip" data-s="${s}" aria-pressed="${s===state.status}">${t(s)}<b>${counts[s]}</b></button>`).join("");
+    `<button class="chip" data-s="${s}" aria-pressed="${s===state.status}">${s==="CURRENT" ? t(state.type==="ANIME"?"watching":"reading") : t(s)}<b>${counts[s]}</b></button>`).join("");
 
-  const q = $("#q").value.trim().toLowerCase(), sort = $("#sort").value;
+  const q = $("#q").value.trim().toLowerCase();
   const name = e => e.media.title.english || e.media.title.romaji;
   let rows = all.filter(e => e.status===state.status && (!q || (name(e)+e.media.title.romaji).toLowerCase().includes(q)));
-  rows.sort((a,b) => sort==="title" ? name(a).localeCompare(name(b)) : sort==="progress" ? b.progress-a.progress : b.score-a.score || name(a).localeCompare(name(b)));
+  const col = new Intl.Collator(undefined,{numeric:true,sensitivity:"base"});
+  // group sequels with their series: strip a trailing "Season 2", "2nd Season", "Part 2", "Final Season" or bare number
+  const base = e => name(e).replace(/\s*(?:[:\-–]\s*)?(?:the\s+)?(?:final\s+season|season\s*\d+|\d+(?:st|nd|rd|th)\s+season|(?:second|third|fourth|fifth)\s+season|part\s*\d+|cour\s*\d+|\d+)\s*$/i,"").trim();
+  const when = e => { const d = e.media.startDate||{}; return (d.year||9999)*10000 + (d.month||0)*100 + (d.day||0); };
+  rows.sort((a,b) => col.compare(base(a),base(b)) || when(a)-when(b) || col.compare(name(a),name(b)));
 
   if (!rows.length) { $("#out").className="msg"; $("#out").textContent = all.length ? t("none") : t("empty"); return; }
   const unit = t(state.type==="ANIME" ? "ep" : "ch");
@@ -173,7 +176,6 @@ document.querySelector(".nav-right").addEventListener("click", e => { const l=e.
 document.querySelector(".tabs").addEventListener("click", e => { const t=e.target.dataset.t; if (t) show(t); });
 $("#chips").addEventListener("click", e => { const s=e.target.closest("[data-s]"); if (s){ state.status=s.dataset.s; render(); } });
 $("#q").addEventListener("input", render);
-$("#sort").addEventListener("change", render);
 // particle background, same as the main site
 (function(){
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
