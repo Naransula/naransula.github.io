@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="robots" content="noindex, nofollow">
+<title>AniList · Naransula</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--line:rgba(255,255,255,.06);--line2:rgba(255,255,255,.15);--dim:#aaa;--mute:#777}
+body{font:16px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sans-serif;background:#08080a;color:#fff;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:0 32px;flex:1;width:100%}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:32px 0;border-bottom:1px solid var(--line);margin-bottom:60px}
+.nav-left{font-size:16px;font-weight:600;letter-spacing:-.3px;cursor:pointer}
+.nav-right{display:flex;gap:28px;align-items:center}
+.nav-btn{background:none;border:none;font:inherit;color:#aaa;text-decoration:none;font-size:13px;transition:color .2s;cursor:pointer;padding:0}
+.nav-btn:hover,.nav-btn.active{color:#fff}
+.divider{width:1px;height:16px;background:rgba(255,255,255,.1)}
+.head{padding:0 0 40px}h1{font-size:48px;font-weight:700;letter-spacing:-1px;line-height:1.1}
+.sub{color:var(--mute);font-size:13px;margin-top:10px}
+.tabs{display:flex;gap:24px;margin-bottom:20px}
+.tabs button,.chip{background:none;border:0;font:inherit;font-size:13px;color:var(--dim);cursor:pointer;padding:0;transition:color .2s}
+.tabs button{font-size:15px}
+.tabs button:hover,.chip:hover{color:#fff}
+.tabs button[aria-pressed=true],.chip[aria-pressed=true]{color:#fff}
+.tabs button[aria-pressed=true]{border-bottom:1px solid #fff}
+.bar{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center;margin-bottom:32px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:6px 20px;flex:1}
+.chip b{font-weight:400;color:var(--mute);margin-left:6px}
+input,select{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:2px;color:#fff;font:inherit;font-size:13px;padding:7px 12px}
+select option{background:#111}
+input:focus,select:focus{outline:none;border-color:var(--line2)}
+button:focus-visible,a:focus-visible{outline:1px solid #fff;outline-offset:3px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px;padding-bottom:80px}
+.card{display:flex;flex-direction:column;text-decoration:none;color:inherit;background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:2px;overflow:hidden;transition:all .3s cubic-bezier(.33,1,.68,1)}
+.card:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.12);transform:translateY(-3px)}
+.card img{display:block;width:100%;aspect-ratio:2/3;object-fit:cover;background:rgba(0,0,0,.4)}
+.meta{padding:10px 12px 12px}
+.title{font-size:13px;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.7em}
+.info{display:flex;justify-content:space-between;color:var(--mute);font-size:11px;margin-top:6px}
+.score{color:#fff}
+.prog{height:2px;background:rgba(255,255,255,.08);margin-top:8px}
+.prog i{display:block;height:100%;background:#fff}
+.msg{color:var(--mute);padding:48px 0;font-size:14px}
+.footer{position:relative;z-index:1;max-width:1000px;width:100%;margin:0 auto;padding:32px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#666}
+.footer-links{display:flex;gap:16px}
+@media(max-width:768px){.container{padding:0 20px}.nav{padding:20px 0}.nav-right{gap:16px}h1{font-size:36px}.footer{padding:24px 20px;flex-direction:column;gap:12px;text-align:center}}
+@media(max-width:480px){.nav-btn{font-size:12px}h1{font-size:28px}.grid{grid-template-columns:repeat(2,1fr);gap:12px}}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="container">
+  <nav class="nav">
+    <div class="nav-left" onclick="location.href='/'">Naransula</div>
+    <div class="nav-right">
+      <a class="nav-btn" href="/" data-i="home">Home</a>
+      <a class="nav-btn" href="/" data-i="projects">Projects</a>
+      <button type="button" class="nav-btn active">AniList</button>
+      <div class="divider"></div>
+      <button type="button" class="nav-btn" data-lang="en">EN</button>
+      <button type="button" class="nav-btn" data-lang="tr">TR</button>
+    </div>
+  </nav>
+  <div class="head"><h1>AniList</h1><p class="sub" id="who"></p></div>
+  <div class="tabs" role="group" aria-label="List type">
+    <button data-t="ANIME" aria-pressed="true" data-i="anime">Anime</button>
+    <button data-t="MANGA" aria-pressed="false" data-i="manga">Manga</button>
+  </div>
+  <div class="bar">
+    <div class="chips" id="chips"></div>
+    <input id="q" type="search" data-ph="search" placeholder="Search titles">
+    <select id="sort" aria-label="Sort by"><option value="score" data-i="score">Score</option><option value="title" data-i="title">Title</option><option value="progress" data-i="progress">Progress</option></select>
+  </div>
+  <div id="out" class="msg">Loading…</div>
+</div>
+<footer class="footer">
+  <div>© 2026 Naransula. All rights reserved.</div>
+  <div class="footer-links">
+    <a class="nav-btn" href="https://anilist.co/user/Naransula/" target="_blank" rel="noopener noreferrer">AniList ↗</a>
+    <a class="nav-btn" href="/" data-i="privacy">Privacy Policy</a>
+  </div>
+</footer>
+<script>
+// ---- change this to your AniList username ----
+const USERNAME = "Naransula";
+// ----------------------------------------------
+
+const QUERY = `query($u:String,$t:MediaType){MediaListCollection(userName:$u,type:$t){lists{entries{
+  status score(format:POINT_10_DECIMAL) progress
+  media{id siteUrl episodes chapters title{romaji english} coverImage{large}}}}}}`;
+const I18N = {
+  en:{privacy:"Privacy Policy",home:"Home",projects:"Projects",anime:"Anime",manga:"Manga",score:"Score",title:"Title",progress:"Progress",search:"Search titles",loading:"Loading…",none:"No titles match.",empty:"This list is empty.",err:"Couldn't load the list",ep:"ep",ch:"ch",
+      CURRENT:"In progress",PLANNING:"Planned",COMPLETED:"Completed",PAUSED:"Paused",DROPPED:"Dropped",REPEATING:"Repeating"},
+  tr:{privacy:"Gizlilik Politikası",home:"Anasayfa",projects:"Projeler",anime:"Anime",manga:"Manga",score:"Puan",title:"Başlık",progress:"İlerleme",search:"Başlık ara",loading:"Yükleniyor…",none:"Eşleşen başlık yok.",empty:"Bu liste boş.",err:"Liste yüklenemedi",ep:"böl.",ch:"böl.",
+      CURRENT:"Devam ediyor",PLANNING:"Planlanan",COMPLETED:"Tamamlanan",PAUSED:"Beklemede",DROPPED:"Bırakılan",REPEATING:"Tekrar"}
+};
+const STATUS = {CURRENT:1,PLANNING:1,COMPLETED:1,PAUSED:1,DROPPED:1,REPEATING:1};
+let lang = "en";
+try { lang = localStorage.getItem("lang") === "tr" ? "tr" : "en"; } catch(e){}
+const t = k => I18N[lang][k];
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i]").forEach(el => el.textContent = t(el.dataset.i));
+  document.querySelectorAll("[data-ph]").forEach(el => el.placeholder = t(el.dataset.ph));
+  document.querySelectorAll("[data-lang]").forEach(el => el.classList.toggle("active", el.dataset.lang === lang));
+}
+const $ = s => document.querySelector(s);
+const state = {type:"ANIME", status:"CURRENT", data:{}};
+
+$("#who").textContent = "@" + USERNAME;
+
+async function load(type){
+  if (state.data[type]) return state.data[type];
+  const key = `anilist:${USERNAME}:${type}`;
+  try { const c = JSON.parse(sessionStorage.getItem(key)); if (c && Date.now()-c.t < 600000) return state.data[type]=c.d; } catch(e){}
+  const r = await fetch("https://graphql.anilist.co", {
+    method:"POST", headers:{"Content-Type":"application/json",Accept:"application/json"},
+    body: JSON.stringify({query:QUERY, variables:{u:USERNAME,t:type}})
+  });
+  const j = await r.json();
+  if (j.errors) throw new Error(j.errors[0].message);
+  // lists are split by status and custom lists, so dedupe by media id
+  const seen = new Map();
+  j.data.MediaListCollection.lists.forEach(l => l.entries.forEach(e => seen.set(e.media.id, e)));
+  const d = [...seen.values()];
+  state.data[type] = d;
+  try { sessionStorage.setItem(key, JSON.stringify({t:Date.now(), d})); } catch(e){}
+  return d;
+}
+
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+function render(){
+  const all = state.data[state.type] || [];
+  const counts = {};
+  all.forEach(e => counts[e.status] = (counts[e.status]||0)+1);
+  const order = Object.keys(STATUS).filter(s => counts[s]);
+  if (!counts[state.status]) state.status = order[0];
+  $("#chips").innerHTML = order.map(s =>
+    `<button class="chip" data-s="${s}" aria-pressed="${s===state.status}">${t(s)}<b>${counts[s]}</b></button>`).join("");
+
+  const q = $("#q").value.trim().toLowerCase(), sort = $("#sort").value;
+  const name = e => e.media.title.english || e.media.title.romaji;
+  let rows = all.filter(e => e.status===state.status && (!q || (name(e)+e.media.title.romaji).toLowerCase().includes(q)));
+  rows.sort((a,b) => sort==="title" ? name(a).localeCompare(name(b)) : sort==="progress" ? b.progress-a.progress : b.score-a.score || name(a).localeCompare(name(b)));
+
+  if (!rows.length) { $("#out").className="msg"; $("#out").textContent = all.length ? t("none") : t("empty"); return; }
+  const unit = t(state.type==="ANIME" ? "ep" : "ch");
+  $("#out").className = "grid";
+  $("#out").innerHTML = rows.map(e => {
+    const m = e.media, total = m.episodes || m.chapters || 0;
+    const pct = total ? Math.min(100, e.progress/total*100) : (e.status==="COMPLETED"?100:0);
+    return `<a class="card" href="${esc(m.siteUrl)}" target="_blank" rel="noopener">
+      <img src="${esc(m.coverImage.large)}" alt="" loading="lazy">
+      <div class="meta"><div class="title">${esc(name(e))}</div>
+      <div class="info"><span>${e.progress}${total?"/"+total:""} ${unit}</span>${e.score?`<span class="score">${e.score} / 10</span>`:""}</div>
+      <div class="prog"><i style="width:${pct}%"></i></div></div></a>`;
+  }).join("");
+}
+
+async function show(type){
+  state.type = type;
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.t===type));
+  $("#out").className = "msg"; $("#out").textContent = t("loading"); $("#chips").innerHTML = "";
+  try { await load(type); render(); }
+  catch(err){ $("#out").textContent = `${t("err")}: ${err.message}`; }
+}
+
+document.querySelector(".nav-right").addEventListener("click", e => { const l=e.target.dataset.lang; if(l){ lang=l; try{localStorage.setItem("lang",l)}catch(x){} applyLang(); if(state.data[state.type]) render(); } });
+document.querySelector(".tabs").addEventListener("click", e => { const t=e.target.dataset.t; if (t) show(t); });
+$("#chips").addEventListener("click", e => { const s=e.target.closest("[data-s]"); if (s){ state.status=s.dataset.s; render(); } });
+$("#q").addEventListener("input", render);
+$("#sort").addEventListener("change", render);
+// particle background, same as the main site
+(function(){
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c=$("#bg"),x=c.getContext("2d");let p=[];
+  const init=()=>{c.width=innerWidth;c.height=innerHeight;p=Array.from({length:Math.min(80,c.width*c.height/15000|0)},()=>({x:Math.random()*c.width,y:Math.random()*c.height,vx:Math.random()-.5,vy:Math.random()-.5,r:Math.random()*1.5+1}).valueOf()).map(o=>(o.vx*=.5,o.vy*=.5,o))};
+  (function f(){x.clearRect(0,0,c.width,c.height);
+    p.forEach(o=>{o.x+=o.vx;o.y+=o.vy;if(o.x<0||o.x>c.width)o.vx*=-1;if(o.y<0||o.y>c.height)o.vy*=-1;x.beginPath();x.arc(o.x,o.y,o.r,0,6.283);x.fillStyle="rgba(255,255,255,.7)";x.fill()});
+    for(let i=0;i<p.length;i++)for(let j=i+1;j<p.length;j++){const d=Math.hypot(p[i].x-p[j].x,p[i].y-p[j].y);if(d<140){x.beginPath();x.moveTo(p[i].x,p[i].y);x.lineTo(p[j].x,p[j].y);x.strokeStyle="rgba(255,255,255,"+(1-d/140)*.25+")";x.stroke()}}
+    requestAnimationFrame(f)})();
+  init();addEventListener("resize",init);
+})();
+applyLang();
+show("ANIME");
+</script>
+</body>
+</html>
